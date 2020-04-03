@@ -8,6 +8,16 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
+    """
+    This function is used for extracting the song \
+    and artist's records from the song json datafile
+    input:
+        cur: database cursor
+        filepath: directory path to song datafile
+
+    ouput:
+        Song data records are inserted into artist table
+    """
     # open song file
     df = pd.read_json(filepath, lines = True)
 
@@ -21,6 +31,18 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
+
+    """
+    This function is used for extracting the event data such as time data, user information \
+    and songplay data from the log datafile
+    input:
+        cur: Database cursor
+        filepath: Directory path to log datafile
+
+    ouput:
+        log data records are inserted into the time, user and songplay tables
+    """
+
     # open log file
     df = df = pd.read_json(filepath, lines = True)
 
@@ -66,6 +88,20 @@ def process_log_file(cur, filepath):
 
 
 def process_data(cur, conn, filepath, func):
+
+    """
+    This function is used for processing the data i.e moving the data \
+    from the json file to tables in the database
+    input:
+        cur: Database cursor
+        conn: connection to the database
+        filepath: Directory path to log datafile
+        func: For calling process_song_file and process_log_file function 
+
+    ouput:
+        records are processed and committed to the database
+    """
+
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -85,9 +121,12 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+
+    #Connect to the database
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=postgres password=P@ssw0rd123")
     cur = conn.cursor()
 
+    #For executing the process
     process_data(cur, conn, filepath='data/song_data', func=process_song_file)
     process_data(cur, conn, filepath='data/log_data', func=process_log_file)
 
